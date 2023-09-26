@@ -24,7 +24,7 @@
 		webSocket.onmessage = (e) => {
 			const data = JSON.parse(e.data);
 
-			if(data.type === "position") {
+			if(data.event === 0) {
 				let tmp = positions.find((p) => p.id === data.id);
 				if(tmp) tmp.position = data.position;
 				else positions.push(data);
