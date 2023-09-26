@@ -1,0 +1,11 @@
+services:
+  client:
+    image: "client"
+    ports:
+      - "5173:80"
+    build: ./client
+  server:
+    image: "server"
+    ports:
+      - "5143:80"
+    build: ./server
