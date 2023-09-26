@@ -4,8 +4,10 @@ services:
     ports:
       - "5173:80"
     build: ./client
+    restart: unless-stopped
   server:
     image: "server"
     ports:
       - "5143:80"
     build: ./server
+    restart: unless-stopped
