@@ -95,7 +95,7 @@ For this to work you need to have a domain name and a DNS record pointing to the
 4. Run `sudo certbot --nginx` and follow the instructions
 5. Run `sudo certbot renew --dry-run` to check if the certificate will be renewed automatically
 
-#### Self signed certificate [(digialocean.com)](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-20-04-1)
+#### Self signed certificate [(digitalocean.com)](https://www.digitalocean.com/community/tutorials/how-to-create-a-self-signed-ssl-certificate-for-nginx-in-ubuntu-20-04-1)
 
 ##### Steps
 
