@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.ObjectPool;
 using server.Models;
 using server.Utils;
+using static server.Utils.JsonUtils;
 
 namespace server.Controllers;
 
@@ -33,7 +34,7 @@ public class WebSocketCanvasController : ControllerBase
         var connection = new WebSocketConnection(webSocket);
 
         Connections.Add(connection);
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
         try
         {
             do
@@ -52,11 +53,11 @@ public class WebSocketCanvasController : ControllerBase
     }
 
     private async Task HandleMessage(string serializedMessage, WebSocketConnection currentConnection) {
-        if(!JsonUtils.TryGetDeserialized(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
+        if(!TryGetDeserialized(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
 
         if (baseMessage.Event is WebSocketClientEvent.UpdateLocation)
         {
-            if(!JsonUtils.TryGetDeserialized(serializedMessage, out ClientUpdateLocationMessage? message)) return;
+            if(!TryGetDeserialized(serializedMessage, out ClientUpdateLocationMessage? message)) return;
 
             await HandleUpdateLocationMessage(message, currentConnection);
         }
