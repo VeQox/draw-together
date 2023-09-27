@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json;
 
 namespace server.Utils;
@@ -17,5 +18,10 @@ public static class JsonUtils
         };
 
         return JsonConvert.DeserializeObject<T>(json, settings);
+    }
+
+    public static bool TryGetDeserialize<T>(string json, [NotNullWhen(true)]out T? deserialized) {
+        deserialized = Deserialize<T>(json);
+        return deserialized is not null;
     }
 }

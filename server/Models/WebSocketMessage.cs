@@ -4,12 +4,12 @@ namespace server.Models;
 
 public enum WebSocketClientEvent
 {
-    LocationUpdate
+    UpdateLocation
 }
 
 public enum WebSocketServerEvent
 {
-    LocationUpdate
+    UpdateLocation
 }
 
 public record WebSocketClientMessage(
@@ -23,11 +23,11 @@ public record Position(
     [property: JsonProperty("x")] int X,
     [property: JsonProperty("y")] int Y);
 
-public record ClientLocationUpdateEvent(
+public record ClientUpdateLocationMessage(
     [property: JsonProperty("position")] Position Position)
-    : WebSocketClientMessage(WebSocketClientEvent.LocationUpdate);
+    : WebSocketClientMessage(WebSocketClientEvent.UpdateLocation);
 
-public record ServerLocationUpdateEvent(
+public record ServerUpdateLocationMessage(
     [property: JsonProperty("position")] Position Position,
     [property: JsonProperty("id")] Guid Guid)
-    : WebSocketServerMessage(WebSocketServerEvent.LocationUpdate);
+    : WebSocketServerMessage(WebSocketServerEvent.UpdateLocation);

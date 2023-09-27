@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.WebSockets;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.ObjectPool;
 using server.Models;
@@ -29,41 +30,48 @@ public class WebSocketCanvasController : ControllerBase
         }
 
         var webSocket = await HttpContext.WebSockets.AcceptWebSocketAsync();
-        var currentConnection = new WebSocketConnection(webSocket);     
-        Connections.Add(currentConnection);
+        var connection = new WebSocketConnection(webSocket);
+
+        Connections.Add(connection);
 
         try
         {
             do
             {
-                var (messageType, raw) = await currentConnection.ReceiveAsync(CancellationToken);
-
+                var (messageType, serializedMessage) = await connection.ReceiveAsync(CancellationToken);
                 if (messageType == WebSocketMessageType.Close) return;
 
-                var baseMessage = JsonUtils.Deserialize<WebSocketClientMessage>(raw);
-                if (baseMessage is null) continue;
-
-                if (baseMessage.Event is WebSocketClientEvent.LocationUpdate)
-                {
-                    var message = JsonUtils.Deserialize<ClientLocationUpdateEvent>(raw);
-
-                    if (message is null) continue;
-
-                    var tasks = new List<Task>();
-                    Connections.ForEach(connection =>
-                    {
-                        if(connection.Id == currentConnection.Id) return;
-                        tasks.Add(connection.SendAsync(new ServerLocationUpdateEvent(message.Position, currentConnection.Id), CancellationToken));
-                    });
-
-                    await Task.WhenAll(tasks.ToArray());
-                }
-            } while (currentConnection.IsConnectionAlive);
+                await HandleMessage(serializedMessage, connection);
+            } while (connection.IsConnectionAlive);
         }
         finally
         {
-            await currentConnection.CloseAsync(CancellationToken);
-            Connections.Remove(currentConnection);
+            await connection.CloseAsync(CancellationToken);
+            Connections.Remove(connection);
         }
+    }
+
+    private async Task HandleMessage(string serializedMessage, WebSocketConnection currentConnection) {
+        if(!JsonUtils.TryGetDeserialize(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
+
+        if (baseMessage.Event is WebSocketClientEvent.UpdateLocation)
+        {
+            if(!JsonUtils.TryGetDeserialize(serializedMessage, out ClientUpdateLocationMessage? message)) return;
+
+            await HandleUpdateLocationMessage(message, currentConnection);
+        }
+    }
+
+    private async Task HandleUpdateLocationMessage(ClientUpdateLocationMessage message, WebSocketConnection currentConnection) {
+        var tasks = new List<Task>();
+        var serverUpdateLocationMessage = new ServerUpdateLocationMessage(message.Position, currentConnection.Id);
+
+        foreach (var connection in Connections)
+        {
+            if (connection.Id == currentConnection.Id) continue;
+            tasks.Add(connection.SendAsync(serverUpdateLocationMessage, CancellationToken));
+        }
+
+        await Task.WhenAll(tasks.ToArray());
     }
 }
