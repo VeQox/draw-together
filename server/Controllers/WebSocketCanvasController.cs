@@ -52,11 +52,11 @@ public class WebSocketCanvasController : ControllerBase
     }
 
     private async Task HandleMessage(string serializedMessage, WebSocketConnection currentConnection) {
-        if(!JsonUtils.TryGetDeserialize(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
+        if(!JsonUtils.TryGetDeserialized(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
 
         if (baseMessage.Event is WebSocketClientEvent.UpdateLocation)
         {
-            if(!JsonUtils.TryGetDeserialize(serializedMessage, out ClientUpdateLocationMessage? message)) return;
+            if(!JsonUtils.TryGetDeserialized(serializedMessage, out ClientUpdateLocationMessage? message)) return;
 
             await HandleUpdateLocationMessage(message, currentConnection);
         }
