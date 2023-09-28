@@ -8,7 +8,7 @@
 
 ### Prerequisites
 
-- [Docker](hhttps://docs.docker.com/engine/install/ubuntu/)
+- [Docker](https://docs.docker.com/engine/install/ubuntu/)
 
 ### Steps
 
