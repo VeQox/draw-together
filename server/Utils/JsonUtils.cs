@@ -20,7 +20,7 @@ public static class JsonUtils
         return JsonConvert.DeserializeObject<T>(json, settings);
     }
 
-    public static bool TryGetDeserialized<T>(string json, [NotNullWhen(true)]out T? deserialized) {
+    public static bool TryDeserialize<T>(string json, [NotNullWhen(true)]out T? deserialized) {
         deserialized = Deserialize<T>(json);
         return deserialized is not null;
     }

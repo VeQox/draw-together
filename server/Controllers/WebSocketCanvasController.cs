@@ -34,7 +34,7 @@ public class WebSocketCanvasController : ControllerBase
         var connection = new WebSocketConnection(webSocket);
 
         Connections.Add(connection);
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     
+
         try
         {
             do
@@ -52,18 +52,20 @@ public class WebSocketCanvasController : ControllerBase
         }
     }
 
-    private async Task HandleMessage(string serializedMessage, WebSocketConnection currentConnection) {
-        if(!TryGetDeserialized(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
+    private async Task HandleMessage(string serializedMessage, WebSocketConnection currentConnection)
+    {
+        if (!TryDeserialize(serializedMessage, out WebSocketClientMessage? baseMessage)) return;
 
         if (baseMessage.Event is WebSocketClientEvent.UpdateLocation)
         {
-            if(!TryGetDeserialized(serializedMessage, out ClientUpdateLocationMessage? message)) return;
+            if (!TryDeserialize(serializedMessage, out ClientUpdateLocationMessage? message)) return;
 
             await HandleUpdateLocationMessage(message, currentConnection);
         }
     }
 
-    private async Task HandleUpdateLocationMessage(ClientUpdateLocationMessage message, WebSocketConnection currentConnection) {
+    private async Task HandleUpdateLocationMessage(ClientUpdateLocationMessage message, WebSocketConnection currentConnection)
+    {
         var tasks = new List<Task>();
         var serverUpdateLocationMessage = new ServerUpdateLocationMessage(message.Position, currentConnection.Id);
 
